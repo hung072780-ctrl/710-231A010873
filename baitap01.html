@@ -6,7 +6,7 @@
     <title>Image Carousel Responsive</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Tải Font Inter */
+        
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
         body {
             font-family: 'Inter', sans-serif;
@@ -19,28 +19,25 @@
             padding: 20px;
         }
 
-        /* Container chính của carousel */
         .carousel-container {
             width: 90%;
             max-width: 800px;
             margin: auto;
-            overflow: hidden; /* Ẩn các slide bên ngoài */
+            overflow: hidden; 
             position: relative;
             border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
 
-        /* Track chứa tất cả các slide, sử dụng Flexbox để xếp ngang */
         .carousel-track {
             display: flex;
-            /* Tăng tốc phần cứng cho hiệu ứng chuyển động mượt mà */
             transition: transform 0.5s ease-in-out; 
         }
 
         .slide {
-            min-width: 100%; /* Mỗi slide chiếm toàn bộ chiều rộng của container */
+            min-width: 100%; 
             height: 400px;
-            background-size: cover;
+            background-size: cover; /* Đảm bảo ảnh bao phủ toàn bộ slide */
             background-position: center;
             display: flex;
             align-items: center;
@@ -48,11 +45,15 @@
             color: white;
             font-size: 2rem;
             text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
-            /* Đảm bảo hình ảnh chất lượng tốt */
             filter: brightness(0.9);
         }
+        
+        /* CSS cho ẢNH CHÂN DUNG (Mặt 1) */
+        .slide-1 {
+             /* Dùng gradient nếu bạn muốn nền slide 1 khác biệt, hoặc xoá dòng này */
+            background-color: #1e40af; 
+        }
 
-        /* Styling cho các nút điều hướng */
         .nav-btn {
             position: absolute;
             top: 50%;
@@ -84,7 +85,6 @@
             border-bottom-left-radius: 8px;
         }
 
-        /* Responsive điều chỉnh chiều cao trên màn hình nhỏ */
         @media (max-width: 600px) {
             .slide {
                 height: 250px;
@@ -101,13 +101,36 @@
 
 <div class="carousel-container">
     <div class="carousel-track" id="carousel-track">
-        <!-- Ít nhất 6 hình ảnh. Sử dụng placeholder URLs -->
-        <div class="slide" style="background-image: url('https://placehold.co/800x400/1e40af/ffffff?text=Cảnh+1');">Cảnh 1</div>
-        <div class="slide" style="background-image: url('https://placehold.co/800x400/059669/ffffff?text=Cảnh+2');">Cảnh 2</div>
-        <div class="slide" style="background-image: url('https://placehold.co/800x400/9d174d/ffffff?text=Cảnh+3');">Cảnh 3</div>
-        <div class="slide" style="background-image: url('https://placehold.co/800x400/84cc16/ffffff?text=Cảnh+4');">Cảnh 4</div>
-        <div class="slide" style="background-image: url('https://placehold.co/800x400/c026d3/ffffff?text=Cảnh+5');">Cảnh 5</div>
-        <div class="slide" style="background-image: url('https://placehold.co/800x400/eab308/ffffff?text=Cảnh+6');">Cảnh 6</div>
+        
+        <!-- SLIDE 1: ẢNH CHÂN DUNG CÁ NHÂN (Yêu cầu bài tập) -->
+        <div class="slide slide-1" style="background-image: url('images/avatar.jpg');">
+       
+        </div>
+        
+        <!-- SLIDE 2: Hình ảnh 2 -->
+        <div class="slide" style="background-image: url('images/js.jpg');">
+            
+        </div>
+        
+        <!-- SLIDE 3: Hình ảnh 3 -->
+        <div class="slide" style="background-image: url('images/python.jpg');">
+            
+        </div>
+        
+        <!-- SLIDE 4: Hình ảnh 4 -->
+        <div class="slide" style="background-image: url('images/java.jpg');">
+            
+        </div>
+        
+        <!-- SLIDE 5: Hình ảnh 5 -->
+        <div class="slide" style="background-image: url('images/html.jpg');">
+         
+        </div>
+        
+        <!-- SLIDE 6: Hình ảnh 6 -->
+        <div class="slide" style="background-image: url('images/css.jpg');">
+            
+        </div>
     </div>
     
     <button id="prev-btn" class="nav-btn">&#10094;</button>
@@ -124,53 +147,59 @@
     const numSlides = slides.length;
     let autoSlideInterval;
 
-    // Hàm cập nhật vị trí của track để hiển thị slide hiện tại
+    
     function updateCarousel() {
-        // Tính toán khoảng dịch chuyển: - (index hiện tại * 100%)
+        
         const offset = -currentIndex * 100;
         track.style.transform = `translateX(${offset}%)`;
     }
 
-    // Xử lý chuyển sang slide tiếp theo
+    
     function nextSlide() {
-        // Logic Modulo: Đảm bảo index luôn quay về 0 khi chạm cuối
+        
         currentIndex = (currentIndex + 1) % numSlides;
         updateCarousel();
     }
 
-    // Xử lý chuyển về slide trước đó
+    
     function prevSlide() {
-        // Logic Modulo an toàn cho số âm: (index - 1 + tổng số) % tổng số
+        
         currentIndex = (currentIndex - 1 + numSlides) % numSlides;
         updateCarousel();
     }
 
-    // Thiết lập tự động chuyển slide sau 3 giây
+    
     function startAutoSlide() {
-        // Xóa interval cũ trước khi tạo mới để tránh lỗi lặp
+        
         clearInterval(autoSlideInterval); 
-        autoSlideInterval = setInterval(nextSlide, 3000); // 3000ms = 3 giây
+        autoSlideInterval = setInterval(nextSlide, 3000); // 3 giây
     }
 
-    // Khởi tạo các sự kiện
+    
+    function stopAutoSlide() {
+        clearInterval(autoSlideInterval);
+    }
+    
+    // Tự động quay
+    startAutoSlide(); 
+
+    
     nextBtn.addEventListener('click', () => {
         nextSlide();
-        // Reset interval khi người dùng tương tác để tránh chuyển slide ngay lập tức
         startAutoSlide(); 
     });
 
     prevBtn.addEventListener('click', () => {
         prevSlide();
-        // Reset interval khi người dùng tương tác
         startAutoSlide();
     });
 
-    // Bắt đầu tự động chuyển slide khi trang được tải
-    startAutoSlide(); 
+    
+    track.addEventListener('mouseover', stopAutoSlide);
+    track.addEventListener('mouseout', startAutoSlide);
 
-    // Đảm bảo không có lỗi nếu DOM chưa sẵn sàng, nhưng ở đây code là tự chứa nên an toàn
+    
     console.log("Carousel đã được khởi tạo với " + numSlides + " slides.");
-
 </script>
 </body>
 </html>
