@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List với LocalStorage</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Tải Font Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e5e7eb;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Sử dụng CSS Grid cho responsive layout */
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr auto; /* Input chiếm hết, button tự động kích thước */
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        /* Danh sách Task */
+        .todo-item {
+            display: grid;
+            grid-template-columns: 1fr auto auto; /* Text - Edit Button - Delete Button */
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #e5e7eb;
+            transition: background-color 0.3s;
+        }
+
+        .todo-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-text {
+            word-break: break-word; /* Đảm bảo text dài xuống dòng */
+            cursor: pointer;
+        }
+        
+        /* Utility styles */
+        .btn {
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+
+        .btn-add {
+            background-color: #10b981;
+            color: white;
+        }
+        .btn-add:hover { background-color: #059669; }
+
+        .btn-edit {
+            background-color: #3b82f6;
+            color: white;
+            margin-right: 8px;
+        }
+        .btn-edit:hover { background-color: #2563eb; }
+
+        .btn-delete {
+            background-color: #ef4444;
+            color: white;
+        }
+        .btn-delete:hover { background-color: #dc2626; }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .todo-item {
+                grid-template-columns: 1fr auto;
+                grid-template-areas: 
+                    "text text"
+                    "edit delete";
+                gap: 5px;
+            }
+            .task-text { grid-area: text; }
+            .btn-edit { grid-area: edit; }
+            .btn-delete { grid-area: delete; margin: 0;}
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="text-3xl font-bold text-gray-800 mb-5 text-center">Danh Sách Công Việc</h1>
+    
+    <div class="input-grid">
+        <input type="text" id="task-input" placeholder="Nhập công việc mới..."
+               class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none">
+        <button id="add-btn" class="btn btn-add">Thêm</button>
+    </div>
+
+    <div id="todo-list" class="flex flex-col">
+        <!-- Tasks will be rendered here -->
+    </div>
+</div>
+
+<script>
+    const taskInput = document.getElementById('task-input');
+    const addBtn = document.getElementById('add-btn');
+    const todoListContainer = document.getElementById('todo-list');
+
+    // Khởi tạo mảng state
+    let todos = [];
+
+    // --- LocalStorage Functions ---
+
+    // Tải dữ liệu từ LocalStorage
+    function loadTodos() {
+        try {
+            const storedTodos = localStorage.getItem('todos');
+            // Nếu có dữ liệu, parse nó, nếu không, dùng mảng rỗng
+            todos = storedTodos ? JSON.parse(storedTodos) : [];
+        } catch (e) {
+            console.error("Lỗi khi tải LocalStorage:", e);
+            todos = [];
+        }
+    }
+
+    // Lưu dữ liệu vào LocalStorage
+    function saveTodos() {
+        try {
+            localStorage.setItem('todos', JSON.stringify(todos));
+        } catch (e) {
+            console.error("Lỗi khi lưu LocalStorage:", e);
+        }
+    }
+
+    // --- Logic State Functions ---
+
+    // Thêm task
+    function addTask() {
+        const text = taskInput.value.trim();
+        if (!text) return;
+
+        const newTodo = {
+            id: Date.now(), // Unique ID
+            text: text,
+            isCompleted: false
+        };
+
+        todos.push(newTodo);
+        taskInput.value = ''; // Xóa input
+        saveAndRender();
+    }
+
+    // Xóa task
+    function deleteTask(id) {
+        // Dùng filter để tạo mảng mới không có task cần xóa
+        todos = todos.filter(todo => todo.id !== id);
+        saveAndRender();
+    }
+
+    // Cập nhật text của task
+    function updateTaskText(id, newText) {
+        const text = newText.trim();
+        if (!text) {
+             // Nếu text rỗng, xóa task (hoặc có thể giữ nguyên)
+             deleteTask(id);
+             return;
+        }
+
+        const todoToUpdate = todos.find(todo => todo.id === id);
+        if (todoToUpdate) {
+            todoToUpdate.text = text;
+            saveAndRender();
+        }
+    }
+    
+    // Toggle trạng thái hoàn thành
+    function toggleComplete(id) {
+        const todoToUpdate = todos.find(todo => todo.id === id);
+        if (todoToUpdate) {
+            todoToUpdate.isCompleted = !todoToUpdate.isCompleted;
+            saveAndRender();
+        }
+    }
+
+    // Hàm render lại toàn bộ DOM
+    function renderTodos() {
+        todoListContainer.innerHTML = ''; // Xóa DOM cũ
+
+        if (todos.length === 0) {
+            todoListContainer.innerHTML = '<p class="text-center text-gray-500 py-4">Chưa có công việc nào.</p>';
+            return;
+        }
+
+        todos.forEach(todo => {
+            const item = document.createElement('div');
+            item.className = 'todo-item';
+            item.dataset.id = todo.id;
+
+            // Text / Input Edit
+            const textElement = document.createElement('span');
+            textElement.className = `task-text ${todo.isCompleted ? 'line-through text-gray-500' : 'text-gray-800'}`;
+            textElement.textContent = todo.text;
+            textElement.addEventListener('click', () => toggleComplete(todo.id)); // Toggle complete on click
+
+            // Nút Edit
+            const editBtn = document.createElement('button');
+            editBtn.className = 'btn btn-edit text-sm';
+            editBtn.textContent = 'Sửa';
+            editBtn.addEventListener('click', () => {
+                // Thay thế text bằng input để chỉnh sửa
+                const currentText = textElement.textContent;
+                const inputEdit = document.createElement('input');
+                inputEdit.type = 'text';
+                inputEdit.className = 'p-1 border border-blue-400 rounded-md flex-grow';
+                inputEdit.value = currentText;
+
+                item.replaceChild(inputEdit, textElement);
+                inputEdit.focus();
+
+                const finishEdit = () => {
+                    updateTaskText(todo.id, inputEdit.value);
+                    // DOM sẽ được render lại hoàn toàn trong updateTaskText, nên không cần replaceChild ở đây
+                };
+
+                // Lắng nghe sự kiện mất focus (blur) hoặc nhấn Enter
+                inputEdit.addEventListener('blur', finishEdit);
+                inputEdit.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        finishEdit();
+                    }
+                });
+            });
+
+            // Nút Delete
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'btn btn-delete text-sm';
+            deleteBtn.textContent = 'Xóa';
+            deleteBtn.addEventListener('click', () => deleteTask(todo.id));
+            
+            item.appendChild(textElement);
+            item.appendChild(editBtn);
+            item.appendChild(deleteBtn);
+            todoListContainer.appendChild(item);
+        });
+    }
+
+    // Hàm tổng hợp Lưu và Render
+    function saveAndRender() {
+        saveTodos();
+        renderTodos();
+    }
+
+    // --- Initialization ---
+
+    addBtn.addEventListener('click', addTask);
+    taskInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            addTask();
+        }
+    });
+
+    // Tải dữ liệu và render lần đầu
+    loadTodos();
+    renderTodos();
+</script>
+</body>
+</html>

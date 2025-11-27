@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Chủ | 710-2024</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-gray-100">
+    <header class="bg-indigo-600 text-white p-4 shadow-md">
+        <nav class="container mx-auto flex justify-between items-center flex-wrap">
+            <a href="index.html" class="text-2xl font-bold p-2">710-2024 (MSSV)</a>
+            <div class="space-x-4 flex flex-wrap p-2">
+                <a href="index.html" class="hover:underline">Trang Chủ</a>
+                <a href="baitap01.html" class="hover:underline">Bài Tập 1</a>
+                <a href="baitap02.html" class="hover:underline">Bài Tập 2</a>
+                <a href="baitap03.html" class="hover:underline">Bài Tập 3</a>
+                <a href="about.html" class="hover:underline">Giới Thiệu</a>
+                <a href="contact.html" class="hover:underline">Liên Hệ</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-6 flex flex-col items-center">
+        <h1 class="text-4xl font-extrabold text-gray-800 mb-6">Chào mừng đến với trang Assignment 710-2024</h1>
+        
+        <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl text-left">
+            <h2 class="text-2xl font-semibold text-indigo-600 mb-4">Danh sách Bài Tập</h2>
+            <ul class="list-disc list-inside space-y-3 text-lg text-gray-700">
+                <li><a href="baitap01.html" class="text-blue-500 hover:text-blue-700 font-medium">Bài Tập 1: Image Carousel (Băng Chuyền Hình Ảnh)</a></li>
+                <li><a href="baitap02.html" class="text-blue-500 hover:text-blue-700 font-medium">Bài Tập 2: Todo List với LocalStorage</a></li>
+                <li><a href="baitap03.html" class="text-blue-500 hover:text-blue-700 font-medium">Bài Tập 3: Game Đoán Số Ngẫu Nhiên</a></li>
+            </ul>
+        </div>
+
+        <div class="mt-8 p-6 bg-white rounded-xl shadow-lg w-full max-w-2xl">
+            <h2 class="text-2xl font-semibold text-indigo-600 mb-4">Thông tin Sinh viên</h2>
+            <div class="flex items-center space-x-4">
+                <img src="images/avatar.jpg" alt="Ảnh Chân Dung" class="w-20 h-20 rounded-full object-cover border-4 border-indigo-200">
+                <div>
+                    <p class="text-gray-800 font-bold">Họ và Tên: [Trương Vân Hùng]</p>
+                    <p class="text-gray-600">MSSV: 231A010873</p>
+                    <p class="text-gray-600">Lớp: 710</p>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script src="js/script.js"></script>
+</body>
+</html>
